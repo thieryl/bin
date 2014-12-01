@@ -1,0 +1,52 @@
+#!/bin/bash
+
+# GNU License, Copyright Mark Bishop, 2014
+# Purpose: scan the LAN and run nmap on each LAN device for all connected NICs.
+# Save, chmod +x, run from terminal (don't double-click)
+# Requires nmap, arp-scan, gawk
+# The nic variable could be hardcoded by replacing with nic=eth0, etc.
+
+# Find the name of the active LAN network adaptor(s)
+nics=$(ip addr show|egrep '^ *inet'|grep brd|awk -- '{ print $7; }')
+
+echo These NICs appear to be connected:
+echo $nics
+echo 
+
+# Split the connected NICs into an array for iteration
+nicArray=(${nics// / })
+
+#Outer loop, iterate through connected NICs
+for j in "${nicArray[@]}"
+do
+echo Currently using adaptor $j
+echo 
+nic=$j
+
+#collect arp-scan in a variable
+output=$(sudo arp-scan -I$nic -l)   
+
+# Populate an array with the ip addresses from the output
+ipArr=($(echo "$output" | gawk '$output ~/^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])/ {print $1}'))
+
+# Print out the first field in each record that is an ip address
+echo The following LAN devices were detected on $j
+for k in ${ipArr[@]}
+do
+echo $k
+done
+
+# List the IP array by elements and nmap each.
+echo
+echo nmapping each...
+for i in "${ipArr[@]}"
+do
+echo
+echo nmaping $i
+sudo nmap -sV -O -v -A $(echo $i)
+done
+
+done #end outer loop
+
+echo Press enter to exit
+read x
