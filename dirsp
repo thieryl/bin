@@ -1,0 +1,79 @@
+#!/bin/bash 
+option=k # default 
+if [ $# -gt 0 ]; then 
+case $1 in 
+-b) option=b 
+shift ;; 
+-k) option=k 
+shift ;; 
+-2) option=2 
+shift ;; 
+-m) option=m 
+shift ;; 
+-g) option=g 
+shift ;; 
+-*) /bin/echo "usage: dirsp [-b|-k|-2|-m|-g] [dir ...]" 
+exit 1 ;; 
+esac 
+fi 
+if [ $option = b ]; then 
+/bin/echo "Results in 512 byte blocks:" 
+if [ $# = 0 ]; then 
+/usr/bin/du -k -s * | sort -n | /bin/awk \ 
+'{printf(" %9d %s\n",$1*2,$2);t+=$1} \ 
+END{printf("----------\n%10d sectors\n",t*2)}' 
+else 
+/usr/bin/du -k -s $* | sort -n | /bin/awk \ 
+'{printf(" %9d %s\n",$1*2,$2);t+=$1} \ 
+END{printf("----------\n%10d sectors\n",t*2)}' 
+fi 
+fi 
+if [ $option = k ]; then 
+/bin/echo "Results in kilobytes:" 
+if [ $# = 0 ]; then 
+/usr/bin/du -k -s * | sort -n | /bin/awk \ 
+'{printf(" %9d %s\n",$1,$2);t+=$1} \ 
+END{printf("----------\n%10d kilobytes\n",t)}' 
+else 
+/usr/bin/du -k -s $* | sort -n | /bin/awk \ 
+'{printf(" %9d %s\n",$1,$2);t+=$1} \ 
+END{printf("----------\n%10d kilobytes\n",t)}' 
+fi 
+fi 
+if [ $option = 2 ]; then 
+/bin/echo "Results in 2K blocks:" 
+if [ $# = 0 ]; then 
+/usr/bin/du -k -s * | sort -n | /bin/awk \ 
+'{printf(" %9.1f %s\n",$1/2,$2);t+=$1} \ 
+END{printf("----------\n%10.1f 2K blocks\n",t/2)}' 
+else 
+/usr/bin/du -k -s $* | sort -n | /bin/awk \ 
+'{printf(" %9.1f %s\n",$1/2,$2);t+=$1} \ 
+END{printf("----------\n%10.1f 2K blocks\n",t/2)}' 
+fi 
+fi 
+if [ $option = m ]; then 
+/bin/echo "Results in megabytes:" 
+if [ $# = 0 ]; then 
+/usr/bin/du -k -s * | sort -n | /bin/awk \ 
+'{printf(" %9.2f %s\n",$1/1024,$2);t+=$1} \ 
+END{printf("----------\n%10.2f megabytes\n",t/1024)}' 
+else 
+/usr/bin/du -k -s $* | sort -n | /bin/awk \ 
+'{printf(" %9.2f %s\n",$1/1024,$2);t+=$1} \ 
+END{printf("----------\n%10.2f megabytes\n",t/1024)}' 
+fi 
+fi 
+if [ $option = g ]; then 
+/bin/echo "Results in gigabytes:" 
+if [ $# = 0 ]; then 
+/usr/bin/du -k -s * | sort -n | /bin/awk \ 
+'{printf(" %9.2f %s\n",$1/1048576,$2);t+=$1} \ 
+END{printf("----------\n%10.2f gigabytes\n",t/1048576)}' 
+else 
+/usr/bin/du -k -s $* | sort -n | /bin/awk \ 
+'{printf(" %9.2f %s\n",$1/1048576,$2);t+=$1} \ 
+END{printf("----------\n%10.2f gigabytes\n",t/1048576)}' 
+fi 
+fi 
+# end

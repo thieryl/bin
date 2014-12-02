@@ -1,0 +1,1 @@
+'aria2c -c --http-user=asreeneebus --http-passwd=46d8nmm1x83r --log=/root/lists/aria.log -x16 -m0 -j1 --input-file=/root/lists/list --dir=/storage/Download'
