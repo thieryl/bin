@@ -1,0 +1,19 @@
+#!/bin/bash
+
+#Script Permettant de faire un dump de la base MYSQL
+
+DATE=/bin/date
+MYSQLDUMP=/sites/WIKIWEBH/mysql/bin/mysqldump
+GZIP=/bin/gzip
+USERNAME=root
+PASSWORD=wh001
+MYSQL_HOME=/usr/local/mysql/5.0.41
+
+#date au format AAMMJJ
+NOW=`${DATE} +"%Y-%m-%d-%kH%M"`
+
+BACKUP_DEST="/var/dbdump/backup-${NOW}.sql"
+BACKUP_DEST_GZ="${BACKUP_DEST}.gz"
+GZIP_PARAMS="-9"
+
+$MYSQL_HOME/bin/mysqldump --user=$USERNAME --password=$PASSWORD --quote-names --opt --databases bitweaver | ${GZIP} -c ${GZIP_PARAMS} > ${BACKUP_DEST_GZ}
